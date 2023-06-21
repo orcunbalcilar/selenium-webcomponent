@@ -16,7 +16,7 @@ public class StepDefinitions {
   @Autowired private HomePage homePage;
 
   @Given("I am on the page {string}")
-  public void iAmOnThePage(String url) throws InterruptedException {
+  public void iAmOnThePage(String url) {
     browser.get(url);
     WebDriverWait wait = new WebDriverWait(browser.getDriver(), Duration.ofSeconds(30));
     wait.until(

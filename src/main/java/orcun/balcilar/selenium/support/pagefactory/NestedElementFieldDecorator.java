@@ -32,8 +32,7 @@ public class NestedElementFieldDecorator extends DefaultFieldDecorator {
   public Object decorate(ClassLoader loader, Field field) {
     if (!(Stream.of(WebElement.class, WebComponent.class)
             .anyMatch(c -> c.isAssignableFrom(field.getType()))
-        || isDecoratableListNestedContext(field)
-        || isDecoratableList(field))) {
+        || isDecoratableList(field) || isDecoratableListWebComponent(field))) {
       return null;
     }
 
@@ -46,78 +45,71 @@ public class NestedElementFieldDecorator extends DefaultFieldDecorator {
       return proxyForLocatorByScope(loader, locator, field);
     } else if (isDecoratableList(field)) {
       return proxyForListLocatorByScope(loader, locator, field);
-    } else if (isDecoratableNestedContext(field)) {
-      return initNestedContext(loader, locator, field);
-    } else if (isDecoratableListNestedContext(field)) {
-      return initListNestedContext(loader, locator, field);
+    } else if (isDecoratableWebComponent(field)) {
+      return proxyForWebComponent(loader, locator, field);
+    } else if (isDecoratableListWebComponent(field)) {
+      return proxyForListWebComponent(loader, locator, field);
     } else {
       return null;
     }
   }
 
-  protected WebComponent initNestedContext(
+  protected WebComponent proxyForWebComponent(
       ClassLoader loader, ElementLocator locator, Field field) {
-    try {
-      WebComponent context = (WebComponent) field.getType().getConstructor().newInstance();
-      WebElement contextElement = proxyForLocatorByScope(loader, locator, field);
-      context.setSearchContext(contextElement);
-      PageFactory.initElements(
-          new NestedElementFieldDecorator(
-              driver,
-              new NestedElementLocatorFactory(
-                  contextElement, ((NestedElementLocatorFactory) factory).getTimeOutInSeconds())),
-          context);
-      return context;
-    } catch (NoSuchMethodException
-        | InstantiationException
-        | IllegalAccessException
-        | InvocationTargetException e) {
-      throw new RuntimeException("Cannot create instance from : " + field.getType(), e);
-    }
+    WebComponent webComponent = createInstance(field.getType());
+    WebElement proxyWebElement = proxyForLocatorByScope(loader, locator, field);
+    webComponent.setSearchContext(proxyWebElement);
+    initWebComponentElements(proxyWebElement, webComponent);
+    return webComponent;
   }
 
-  @SuppressWarnings("unchecked")
-  protected List<? extends WebComponent> initListNestedContext(
+  protected List<? extends WebComponent> proxyForListWebComponent(
       ClassLoader loader, ElementLocator locator, Field field) {
-    Type listType = ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
+    WebComponent listType =
+        (WebComponent) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
     List<WebElement> elements = proxyForListLocatorByScope(loader, locator, field);
-    List<? extends WebComponent> nestedContexts =
+    List<? extends WebComponent> webComponents =
         elements.stream()
-            .map(
-                e -> {
-                  try {
-                    return (WebComponent)
-                        ((Class<? extends WebComponent>) listType).getConstructor().newInstance();
-                  } catch (InstantiationException
-                      | IllegalAccessException
-                      | InvocationTargetException
-                      | NoSuchMethodException ex) {
-                    throw new RuntimeException(
-                        "Cannot create instance from : " + field.getType(), ex);
-                  }
-                })
+            .map(e -> createInstance(listType.getClass()))
             .collect(Collectors.toList());
     IntStream.range(0, elements.size())
         .forEach(
             i -> {
-              nestedContexts.get(i).setSearchContext(elements.get(i));
-              PageFactory.initElements(
-                  new NestedElementFieldDecorator(
-                      driver,
-                      new NestedElementLocatorFactory(
-                          elements.get(i),
-                          ((NestedElementLocatorFactory) factory).getTimeOutInSeconds(),
-                          ((NestedElementLocatorFactory) factory).getExceptions())),
-                  nestedContexts.get(i));
+              WebElement proxyWebElement = elements.get(i);
+              WebComponent webComponent = webComponents.get(i);
+              webComponent.setSearchContext(proxyWebElement);
+              initWebComponentElements(proxyWebElement, webComponent);
             });
-    return nestedContexts;
+    return webComponents;
   }
 
-  protected boolean isDecoratableNestedContext(Field field) {
+  private WebComponent createInstance(Class<?> runtimeClass) {
+    try {
+      return (WebComponent) runtimeClass.getConstructor().newInstance();
+    } catch (InstantiationException
+        | IllegalAccessException
+        | InvocationTargetException
+        | NoSuchMethodException e) {
+      throw new RuntimeException("Cannot create instance from : " + runtimeClass, e);
+    }
+  }
+
+  private void initWebComponentElements(WebElement proxyWebElement, WebComponent webComponent) {
+    PageFactory.initElements(
+        new NestedElementFieldDecorator(
+            driver,
+            new NestedElementLocatorFactory(
+                proxyWebElement,
+                ((NestedElementLocatorFactory) factory).getTimeOutInSeconds(),
+                ((NestedElementLocatorFactory) factory).getExceptions())),
+        webComponent);
+  }
+
+  protected boolean isDecoratableWebComponent(Field field) {
     return WebComponent.class.isAssignableFrom(field.getType()) && hasFindByAnnotation(field);
   }
 
-  protected boolean isDecoratableListNestedContext(Field field) {
+  protected boolean isDecoratableListWebComponent(Field field) {
     if (!field.getType().equals(List.class)) {
       return false;
     }
@@ -131,6 +123,7 @@ public class NestedElementFieldDecorator extends DefaultFieldDecorator {
 
     Type listType = ((ParameterizedType) genericType).getActualTypeArguments()[0];
 
+    // isInstance used to support for inner classes
     if (!listType.getClass().isInstance(WebComponent.class)) {
       return false;
     }
@@ -146,15 +139,19 @@ public class NestedElementFieldDecorator extends DefaultFieldDecorator {
 
   private WebElement proxyForLocatorByScope(
       ClassLoader loader, ElementLocator locator, Field field) {
-    return Arrays.stream(field.getDeclaredAnnotations()).anyMatch(a -> a instanceof PageScope)
+    return hasPageScopeAnnotation(field)
         ? proxyForLocator(loader, new DefaultElementLocatorFactory(driver).createLocator(field))
         : proxyForLocator(loader, locator);
   }
 
   private List<WebElement> proxyForListLocatorByScope(
       ClassLoader loader, ElementLocator locator, Field field) {
-    return Arrays.stream(field.getDeclaredAnnotations()).anyMatch(a -> a instanceof PageScope)
+    return hasPageScopeAnnotation(field)
         ? proxyForListLocator(loader, new DefaultElementLocatorFactory(driver).createLocator(field))
         : proxyForListLocator(loader, locator);
+  }
+
+  private boolean hasPageScopeAnnotation(Field field) {
+    return Arrays.stream(field.getDeclaredAnnotations()).anyMatch(a -> a instanceof PageScope);
   }
 }

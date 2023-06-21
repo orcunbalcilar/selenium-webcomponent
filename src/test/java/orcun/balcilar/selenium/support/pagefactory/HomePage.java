@@ -33,7 +33,7 @@ public class HomePage {
     row.selectFromPort(port);
   }
 
-  public void selectToPort(String port) throws InterruptedException {
+  public void selectToPort(String port) {
     System.out.println(port);
     fromPortArea.click();
     fromPortArea.clear();

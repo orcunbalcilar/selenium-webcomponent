@@ -13,6 +13,7 @@ public class NestedElementLocator extends DefaultElementLocator {
   private final Clock clock;
   private final List<Class<? extends WebDriverException>> exceptions;
   private WebDriverException lastException;
+  private int sleepInMillis = 250;
 
   public NestedElementLocator(
       SearchContext searchContext,
@@ -23,6 +24,11 @@ public class NestedElementLocator extends DefaultElementLocator {
     this.timeOutInSeconds = timeOutInSeconds;
     this.clock = Clock.systemDefaultZone();
     this.exceptions = exceptions;
+  }
+
+  public NestedElementLocator withSleepInterval(int sleepInMillis) {
+    this.sleepInMillis = sleepInMillis;
+    return this;
   }
 
   @Override
@@ -56,11 +62,7 @@ public class NestedElementLocator extends DefaultElementLocator {
     Instant end = clock.instant().plus(Duration.ofSeconds(timeOutInSeconds));
     while (clock.instant().isBefore(end)) {
       try {
-        List<WebElement> elements = NestedElementLocator.super.findElements();
-        if (elements.isEmpty()) {
-          throw new NoSuchElementException("Unable to locate the element");
-        }
-        return elements;
+        return NestedElementLocator.super.findElements();
       } catch (WebDriverException e) {
         if (exceptions.stream().noneMatch(ex -> ex.isInstance(e))) {
           throw new Error("Unable to locate the elements " + lastException.getMessage());
@@ -75,15 +77,11 @@ public class NestedElementLocator extends DefaultElementLocator {
 
   private void waitFor() {
     try {
-      Thread.sleep(sleepFor());
-      System.out.println("Waiting for " + sleepFor() + " ms");
+      Thread.sleep(sleepInMillis);
+      System.out.println("Waiting for finding element(s) " + sleepInMillis + " ms");
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       throw new AssertionError(e);
     }
-  }
-
-  protected int sleepFor() {
-    return 250;
   }
 }
