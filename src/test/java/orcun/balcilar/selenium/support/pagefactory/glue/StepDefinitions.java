@@ -28,11 +28,11 @@ public class StepDefinitions {
 
   @When("I select the origin {string}")
   public void iSelectTheDestination(String origin) throws InterruptedException {
-    homePage.selectToPort(origin);
+    homePage.selectFromPort(origin);
   }
 
   @When("I select the destination {string}")
   public void iSelectTheOrigin(String destination) throws InterruptedException {
-    homePage.selectFromPort(destination);
+    homePage.selectToPort(destination);
   }
 }

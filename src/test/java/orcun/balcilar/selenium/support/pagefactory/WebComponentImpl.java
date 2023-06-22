@@ -1,20 +1,39 @@
 package orcun.balcilar.selenium.support.pagefactory;
 
-import jakarta.annotation.PostConstruct;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.PageFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
-public abstract class WebComponentImpl extends WebComponent {
+public abstract class WebComponentImpl extends WebComponent implements ApplicationContextAware {
 
   @Autowired protected Browser browser;
 
-  @PostConstruct
+  @Value("${timeout}")
+  private int timeout;
+
+  private ApplicationContext applicationContext;
+
+  /*@PostConstruct
   private void init() {
-    WebDriver driver = browser.getDriver();
-    PageFactory.initElements(
-        new NestedElementFieldDecorator(
-            driver, new NestedElementLocatorFactory(getSearchContext(), 30)),
-        this);
+    PageFactory.initElements(createFieldDecorator(), this);
+  }
+
+  private AutowiredNestedElementFieldDecorator createFieldDecorator() {
+    System.out.println("timeout " + timeout);
+    AutowiredNestedElementFieldDecorator fieldDecorator =
+        applicationContext.getBean(
+            AutowiredNestedElementFieldDecorator.class,
+            browser.getDriver(),
+            new NestedElementLocatorFactory(getSearchContext(), timeout),
+            this);
+    applicationContext.getAutowireCapableBeanFactory().autowireBean(fieldDecorator);
+    return fieldDecorator;
+  }*/
+
+  @Override
+  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    this.applicationContext = applicationContext;
   }
 }

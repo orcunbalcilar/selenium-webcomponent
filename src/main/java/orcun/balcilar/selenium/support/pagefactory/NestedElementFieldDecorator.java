@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -21,7 +20,7 @@ import org.openqa.selenium.support.pagefactory.ElementLocator;
 
 public class NestedElementFieldDecorator extends DefaultFieldDecorator {
 
-  private final WebDriver driver;
+  protected final WebDriver driver;
 
   public NestedElementFieldDecorator(WebDriver driver, NestedElementLocatorFactory factory) {
     super(factory);
@@ -32,7 +31,8 @@ public class NestedElementFieldDecorator extends DefaultFieldDecorator {
   public Object decorate(ClassLoader loader, Field field) {
     if (!(Stream.of(WebElement.class, WebComponent.class)
             .anyMatch(c -> c.isAssignableFrom(field.getType()))
-        || isDecoratableList(field) || isDecoratableListWebComponent(field))) {
+        || isDecoratableList(field)
+        || isDecoratableListWebComponent(field))) {
       return null;
     }
 
@@ -56,22 +56,23 @@ public class NestedElementFieldDecorator extends DefaultFieldDecorator {
 
   protected WebComponent proxyForWebComponent(
       ClassLoader loader, ElementLocator locator, Field field) {
-    WebComponent webComponent = createInstance(field.getType());
+    WebComponent webComponent = createWebComponent(field);
     WebElement proxyWebElement = proxyForLocatorByScope(loader, locator, field);
     webComponent.setSearchContext(proxyWebElement);
     initWebComponentElements(proxyWebElement, webComponent);
     return webComponent;
   }
 
+  @SuppressWarnings("unchecked")
+  protected WebComponent createWebComponent(Field field) {
+    return createInstance((Class<? extends WebComponent>) field.getType());
+  }
+
   protected List<? extends WebComponent> proxyForListWebComponent(
       ClassLoader loader, ElementLocator locator, Field field) {
-    WebComponent listType =
-        (WebComponent) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
     List<WebElement> elements = proxyForListLocatorByScope(loader, locator, field);
-    List<? extends WebComponent> webComponents =
-        elements.stream()
-            .map(e -> createInstance(listType.getClass()))
-            .collect(Collectors.toList());
+    List<? extends WebComponent> webComponents = createWebComponentList(elements, field);
+    System.out.println("before proxyWebComponentElements");
     IntStream.range(0, elements.size())
         .forEach(
             i -> {
@@ -80,12 +81,26 @@ public class NestedElementFieldDecorator extends DefaultFieldDecorator {
               webComponent.setSearchContext(proxyWebElement);
               initWebComponentElements(proxyWebElement, webComponent);
             });
+    System.out.println("after proxyWebComponentElements");
     return webComponents;
   }
 
-  private WebComponent createInstance(Class<?> runtimeClass) {
+  @SuppressWarnings("unchecked")
+  protected List<? extends WebComponent> createWebComponentList(
+      List<WebElement> elements, Field field) {
+    Class<? extends WebComponent> runtimeClass = getTypeArgumentWebComponentClass(field);
+    return elements.stream().map(e -> createInstance(runtimeClass)).collect(Collectors.toList());
+  }
+
+  @SuppressWarnings("unchecked")
+  protected Class<? extends WebComponent> getTypeArgumentWebComponentClass(Field field) {
+    return (Class<? extends WebComponent>)
+        ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
+  }
+
+  protected WebComponent createInstance(Class<? extends WebComponent> runtimeClass) {
     try {
-      return (WebComponent) runtimeClass.getConstructor().newInstance();
+      return runtimeClass.getConstructor().newInstance();
     } catch (InstantiationException
         | IllegalAccessException
         | InvocationTargetException
@@ -94,7 +109,7 @@ public class NestedElementFieldDecorator extends DefaultFieldDecorator {
     }
   }
 
-  private void initWebComponentElements(WebElement proxyWebElement, WebComponent webComponent) {
+  protected void initWebComponentElements(WebElement proxyWebElement, WebComponent webComponent) {
     PageFactory.initElements(
         new NestedElementFieldDecorator(
             driver,
@@ -137,14 +152,14 @@ public class NestedElementFieldDecorator extends DefaultFieldDecorator {
         || field.getAnnotation(FindAll.class) != null;
   }
 
-  private WebElement proxyForLocatorByScope(
+  protected final WebElement proxyForLocatorByScope(
       ClassLoader loader, ElementLocator locator, Field field) {
     return hasPageScopeAnnotation(field)
         ? proxyForLocator(loader, new DefaultElementLocatorFactory(driver).createLocator(field))
         : proxyForLocator(loader, locator);
   }
 
-  private List<WebElement> proxyForListLocatorByScope(
+  protected final List<WebElement> proxyForListLocatorByScope(
       ClassLoader loader, ElementLocator locator, Field field) {
     return hasPageScopeAnnotation(field)
         ? proxyForListLocator(loader, new DefaultElementLocatorFactory(driver).createLocator(field))
@@ -152,6 +167,6 @@ public class NestedElementFieldDecorator extends DefaultFieldDecorator {
   }
 
   private boolean hasPageScopeAnnotation(Field field) {
-    return Arrays.stream(field.getDeclaredAnnotations()).anyMatch(a -> a instanceof PageScope);
+    return field.isAnnotationPresent(PageScope.class);
   }
 }
