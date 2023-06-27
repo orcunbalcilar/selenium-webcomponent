@@ -7,13 +7,13 @@ import org.springframework.stereotype.Component;
 
 @Scope("prototype")
 @Component
-public class Row extends WebComponentImpl {
+public class Row extends SpringWebComponent {
 
   @Autowired
   @FindBy(css = ".input-button__content")
   private Content content;
 
-  public void selectPort(String port) throws InterruptedException {
+  public void selectPort(String port) {
     content.click();
     content.clear();
     content.sendKeys(port);

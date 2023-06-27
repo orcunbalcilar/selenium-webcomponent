@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Scope("prototype")
 @Component
-public class Content extends WebComponentImpl {
+public class Content extends SpringWebComponent {
 
   @FindBy(css = ".input-button__input")
   private WebElement input;

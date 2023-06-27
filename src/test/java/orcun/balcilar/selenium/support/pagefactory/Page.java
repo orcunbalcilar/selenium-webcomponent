@@ -14,11 +14,11 @@ public abstract class Page {
   @PostConstruct
   private void init() {
     WebDriver driver = browser.getDriver();
-    AutowiredNestedElementFieldDecorator fieldDecorator =
+    SpringWebComponentFieldDecorator fieldDecorator =
         applicationContext.getBean(
-            AutowiredNestedElementFieldDecorator.class,
+            SpringWebComponentFieldDecorator.class,
             driver,
-            new NestedElementLocatorFactory(driver, 30),
+            new WebComponentLocatorFactory(driver, 30),
             this);
     PageFactory.initElements(fieldDecorator, this);
   }

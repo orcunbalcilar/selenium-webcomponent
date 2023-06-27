@@ -8,14 +8,14 @@ import java.util.List;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.pagefactory.DefaultElementLocator;
 
-public class NestedElementLocator extends DefaultElementLocator {
+public class WebComponentLocator extends DefaultElementLocator {
   protected final int timeOutInSeconds;
   private final Clock clock;
   private final List<Class<? extends WebDriverException>> exceptions;
   private WebDriverException lastException;
   private int sleepInMillis = 250;
 
-  public NestedElementLocator(
+  public WebComponentLocator(
       SearchContext searchContext,
       Field field,
       int timeOutInSeconds,
@@ -26,7 +26,7 @@ public class NestedElementLocator extends DefaultElementLocator {
     this.exceptions = exceptions;
   }
 
-  public NestedElementLocator withSleepInterval(int sleepInMillis) {
+  public WebComponentLocator withSleepInterval(int sleepInMillis) {
     this.sleepInMillis = sleepInMillis;
     return this;
   }
@@ -45,7 +45,7 @@ public class NestedElementLocator extends DefaultElementLocator {
     Instant end = clock.instant().plus(Duration.ofSeconds(timeOutInSeconds));
     while (clock.instant().isBefore(end)) {
       try {
-        return NestedElementLocator.super.findElement();
+        return WebComponentLocator.super.findElement();
       } catch (WebDriverException e) {
         if (exceptions.stream().noneMatch(ex -> ex.isInstance(e))) {
           throw new Error("Unable to locate the element " + lastException.getMessage());
@@ -62,7 +62,7 @@ public class NestedElementLocator extends DefaultElementLocator {
     Instant end = clock.instant().plus(Duration.ofSeconds(timeOutInSeconds));
     while (clock.instant().isBefore(end)) {
       try {
-        return NestedElementLocator.super.findElements();
+        return WebComponentLocator.super.findElements();
       } catch (WebDriverException e) {
         if (exceptions.stream().noneMatch(ex -> ex.isInstance(e))) {
           throw new Error("Unable to locate the elements " + lastException.getMessage());
@@ -78,7 +78,6 @@ public class NestedElementLocator extends DefaultElementLocator {
   private void waitFor() {
     try {
       Thread.sleep(sleepInMillis);
-      System.out.println("Waiting for finding element(s) " + sleepInMillis + " ms");
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       throw new AssertionError(e);

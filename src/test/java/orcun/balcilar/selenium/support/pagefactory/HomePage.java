@@ -14,12 +14,12 @@ public class HomePage extends Page {
   @FindBy(css = "fsw-input-button")
   private List<Row> rows;
 
-  public void selectFromPort(String port) throws InterruptedException {
+  public void selectFromPort(String port) {
     System.out.println(port);
     rows.get(0).selectPort(port);
   }
 
-  public void selectToPort(String port) throws InterruptedException {
+  public void selectToPort(String port) {
     System.out.println(port);
     rows.get(1).selectPort(port);
   }
