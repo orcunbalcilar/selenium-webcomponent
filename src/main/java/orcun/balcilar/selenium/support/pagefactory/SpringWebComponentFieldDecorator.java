@@ -47,10 +47,10 @@ public class SpringWebComponentFieldDecorator extends WebComponentFieldDecorator
   protected WebComponent proxyForWebComponent(
       ClassLoader loader, ElementLocator locator, Field field) {
     if (hasDIAnnotation(field)) {
+      return proxyForSpringWebComponent(loader, locator, field);
+    } else {
       return super.proxyForWebComponent(loader, locator, field);
     }
-
-    return proxyForSpringWebComponent(loader, locator, field);
   }
 
   /**
@@ -92,10 +92,10 @@ public class SpringWebComponentFieldDecorator extends WebComponentFieldDecorator
   protected List<? extends WebComponent> proxyForListWebComponent(
       ClassLoader loader, ElementLocator locator, Field field) {
     if (hasDIAnnotation(field)) {
-      return super.proxyForListWebComponent(loader, locator, field);
+      return proxyForListSpringWebComponent(loader, locator, field);
+    } else {
+        return super.proxyForListWebComponent(loader, locator, field);
     }
-    
-    return proxyForListSpringWebComponent(loader, locator, field);
   }
   
   @SuppressWarnings("unchecked")
