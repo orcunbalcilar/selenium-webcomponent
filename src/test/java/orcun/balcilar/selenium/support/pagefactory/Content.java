@@ -5,12 +5,16 @@ import org.openqa.selenium.support.FindBy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-@Scope("prototype")
+@Scope(value = "prototype")
 @Component
 public class Content extends SpringWebComponent {
 
   @FindBy(css = ".input-button__input")
   private WebElement input;
+
+  @PageScoped
+  @FindBy(css = ".home")
+  private Home home;
 
   public void click() {
     input.click();

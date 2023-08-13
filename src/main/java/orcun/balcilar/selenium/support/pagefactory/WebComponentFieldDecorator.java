@@ -52,7 +52,7 @@ public class WebComponentFieldDecorator extends DefaultFieldDecorator {
     }
   }
 
-  private Type getListType(Field field) {
+  protected Type getListType(Field field) {
     return ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
   }
 
@@ -139,7 +139,7 @@ public class WebComponentFieldDecorator extends DefaultFieldDecorator {
     return hasFindByAnnotation(field);
   }
 
-  private boolean hasFindByAnnotation(Field field) {
+  protected final boolean hasFindByAnnotation(Field field) {
     return field.getAnnotation(FindBy.class) != null
         || field.getAnnotation(FindBys.class) != null
         || field.getAnnotation(FindAll.class) != null;

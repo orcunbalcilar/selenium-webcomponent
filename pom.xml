@@ -2,15 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <!--parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.0</version>
-        <relativePath/>
-    </parent-->
+
     <groupId>orcun.balcilar</groupId>
     <artifactId>selenium-webcomponent</artifactId>
-    <version>4.10.0</version>
+    <version>1.0.0</version>
     <name>selenium-webcomponent</name>
     <description>Web Component Support For Page Factory</description>
 
@@ -107,7 +102,19 @@
                     <release>11</release>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.1.2</version>
+            </plugin>
         </plugins>
+        <!--extensions>
+            <extension>
+                <groupId>org.apache.maven.extensions</groupId>
+                <artifactId>maven-build-cache-extension</artifactId>
+                <version>1.0.1</version>
+            </extension>
+        </extensions-->
     </build>
 
 </project>

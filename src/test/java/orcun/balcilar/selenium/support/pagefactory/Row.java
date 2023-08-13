@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-@Scope("prototype")
+@Scope(value = "prototype")
 @Component
 public class Row extends SpringWebComponent {
 
@@ -13,7 +13,7 @@ public class Row extends SpringWebComponent {
   @FindBy(css = ".input-button__content")
   private Content content;
 
-  public void selectPort(String port) {
+  public void enterPort(String port) {
     content.click();
     content.clear();
     content.sendKeys(port);

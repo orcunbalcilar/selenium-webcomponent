@@ -7,8 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * The PageScoped annotation is a marker typically associated with fields in subclasses of the
- * {@link orcun.balcilar.selenium.support.pagefactory.WebComponent} class.
- * Its presence triggers a
+ * {@link orcun.balcilar.selenium.support.pagefactory.WebComponent} class. Its presence triggers a
  * global search scope for the WebElement across the entire page, mirroring the behavior of the
  * driver.findElement(By.id(".")) method.
  *
