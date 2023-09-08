@@ -1,4 +1,4 @@
-package orcun.balcilar.selenium.support.pagefactory;
+package orcun.balcilar.selenium.support.pagefactory.test.springstructure;
 
 import org.junit.jupiter.api.Test;
 

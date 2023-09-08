@@ -17,6 +17,10 @@ import org.openqa.selenium.support.pagefactory.DefaultElementLocatorFactory;
 import org.openqa.selenium.support.pagefactory.DefaultFieldDecorator;
 import org.openqa.selenium.support.pagefactory.ElementLocator;
 
+/**
+ * The WebComponentFieldDecorator class provides a default method for initializing web elements
+ * within a web component using the PageFactory pattern and a custom WebComponentLocatorFactory.
+ */
 public class WebComponentFieldDecorator extends DefaultFieldDecorator {
 
   protected final WebDriver driver;
@@ -128,7 +132,7 @@ public class WebComponentFieldDecorator extends DefaultFieldDecorator {
       return false;
     }
 
-    Type listType = ((ParameterizedType) genericType).getActualTypeArguments()[0];
+    Type listType = getListType(field);
 
     // isInstance used to support for inner classes
     if (!listType.getClass().isInstance(WebElement.class)

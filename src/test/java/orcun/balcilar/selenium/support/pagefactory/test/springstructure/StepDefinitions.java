@@ -1,10 +1,8 @@
-package orcun.balcilar.selenium.support.pagefactory.glue;
+package orcun.balcilar.selenium.support.pagefactory.test.springstructure;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import java.time.Duration;
-import orcun.balcilar.selenium.support.pagefactory.Browser;
-import orcun.balcilar.selenium.support.pagefactory.HomePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;

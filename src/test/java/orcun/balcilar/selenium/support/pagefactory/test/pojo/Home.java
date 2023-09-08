@@ -1,5 +1,6 @@
-package orcun.balcilar.selenium.support.pagefactory;
+package orcun.balcilar.selenium.support.pagefactory.test.pojo;
 
+import orcun.balcilar.selenium.support.pagefactory.WebComponent;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 

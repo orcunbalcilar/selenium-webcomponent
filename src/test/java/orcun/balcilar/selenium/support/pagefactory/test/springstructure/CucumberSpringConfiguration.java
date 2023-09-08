@@ -1,4 +1,4 @@
-package orcun.balcilar.selenium.support.pagefactory.glue;
+package orcun.balcilar.selenium.support.pagefactory.test.springstructure;
 
 import io.cucumber.spring.CucumberContextConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;

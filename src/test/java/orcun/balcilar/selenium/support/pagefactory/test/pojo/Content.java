@@ -1,13 +1,11 @@
-package orcun.balcilar.selenium.support.pagefactory;
+package orcun.balcilar.selenium.support.pagefactory.test.pojo;
 
+import orcun.balcilar.selenium.support.pagefactory.PageScoped;
+import orcun.balcilar.selenium.support.pagefactory.WebComponent;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Scope(value = "prototype")
-@Component
-public class Content extends SpringWebComponent {
+public class Content extends WebComponent {
 
   @FindBy(css = ".input-button__input")
   private WebElement input;

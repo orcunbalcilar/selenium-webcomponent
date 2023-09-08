@@ -1,5 +1,7 @@
-package orcun.balcilar.selenium.support.pagefactory;
+package orcun.balcilar.selenium.support.pagefactory.test.springstructure;
 
+import java.util.List;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -10,13 +12,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class HomePage extends Page {
 
-  @Autowired
-  @FindBy(css = "fsw-input-button[uniqueid='departure']")
-  private Row departureRow;
+  private WebElement abc;
 
-  @Autowired
-  @FindBy(css = "fsw-input-button[uniqueid='destination']")
-  private Row arrivalRow;
+  @FindBy(css = "fsw-input-button")
+  private List<Row> rows;
 
   @Autowired
   @FindBy(css = "fsw-origin-container")
@@ -29,9 +28,12 @@ public class HomePage extends Page {
   @FindBy(css = ".home")
   private Home home;
 
-  public void selectFromPort(String port) {departureRow.enterPort(port);}
+  public void selectFromPort(String port) {
+    System.out.println("heyoo");
+    rows.get(0).enterPort(port);
+  }
 
   public void selectToPort(String port) {
-    arrivalRow.enterPort(port);
+    rows.get(1).enterPort(port);
   }
 }

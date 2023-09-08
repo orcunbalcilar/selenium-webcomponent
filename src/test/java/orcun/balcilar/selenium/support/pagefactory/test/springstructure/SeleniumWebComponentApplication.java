@@ -1,4 +1,4 @@
-package orcun.balcilar.selenium.support.pagefactory;
+package orcun.balcilar.selenium.support.pagefactory.test.springstructure;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
