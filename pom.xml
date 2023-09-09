@@ -3,11 +3,32 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>orcun.balcilar</groupId>
+    <groupId>com.github.orcunbalcilar</groupId>
     <artifactId>selenium-webcomponent</artifactId>
     <version>1.0.0</version>
-    <name>selenium-webcomponent</name>
+    <name>${project.groupId}:${project.artifactId}</name>
     <description>Web Component Support For Page Factory</description>
+    <url>https://github.com/orcunbalcilar/selenium-webcomponent</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Orçun Balcılar</name>
+            <email>orcunbalcilar@gmail.com</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/orcunbalcilar/selenium-webcomponent.git</connection>
+        <developerConnection>scm:git:ssh://github.com:orcunbalcilar/selenium-webcomponent.git</developerConnection>
+        <url>http://github.com/orcunbalcilar/selenium-webcomponent/tree/main</url>
+    </scm>
 
     <properties>
         <junit-jupiter.version>5.9.3</junit-jupiter.version>
@@ -125,13 +146,13 @@
                 <version>3.1.2</version>
             </plugin>
         </plugins>
-        <!--extensions>
+        <extensions>
             <extension>
                 <groupId>org.apache.maven.extensions</groupId>
                 <artifactId>maven-build-cache-extension</artifactId>
                 <version>1.0.1</version>
             </extension>
-        </extensions-->
+        </extensions>
     </build>
 
 </project>
