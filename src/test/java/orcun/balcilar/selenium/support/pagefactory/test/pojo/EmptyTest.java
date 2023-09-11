@@ -17,10 +17,10 @@ public class EmptyTest {
     driver.get("https://www.ryanair.com/tr/en");
     WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
     wait.until(
-                    ExpectedConditions.visibilityOfElementLocated(
-                            By.cssSelector(
-                                    "#cookie-popup-with-overlay > div > div.cookie-popup-with-overlay__buttons > button.cookie-popup-with-overlay__button")))
-            .click();
+            ExpectedConditions.visibilityOfElementLocated(
+                By.cssSelector(
+                    "#cookie-popup-with-overlay > div > div.cookie-popup-with-overlay__buttons > button.cookie-popup-with-overlay__button")))
+        .click();
     WebComponentLocatorFactory factory = new WebComponentLocatorFactory(driver, 30);
     HomePage homePage = new HomePage(driver, factory);
     homePage.selectToPort("JFK");

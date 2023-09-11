@@ -4,11 +4,11 @@ import orcun.balcilar.selenium.support.pagefactory.WebComponent;
 import org.openqa.selenium.support.FindBy;
 
 public class Row extends WebComponent {
-  
+
   @FindBy(css = ".input-button__content")
   private Content content;
-  
-  public Row () {
+
+  public Row() {
     System.out.println("iyi miyiz");
   }
 

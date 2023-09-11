@@ -5,11 +5,10 @@ import org.springframework.context.ApplicationContext;
 
 public abstract class SpringWebComponent extends WebComponent
     implements SpringBeanElementInitializer {
-    @Autowired
-    private ApplicationContext applicationContext;
+  @Autowired private ApplicationContext applicationContext;
 
-    @Override
-    public ApplicationContext getApplicationContext() {
-        return applicationContext;
-    }
+  @Override
+  public ApplicationContext getApplicationContext() {
+    return applicationContext;
+  }
 }

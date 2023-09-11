@@ -1,6 +1,5 @@
 package orcun.balcilar.selenium.support.pagefactory.test.springstructure;
 
-import javax.annotation.PostConstruct;
 import org.openqa.selenium.support.FindBy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -14,11 +13,6 @@ public class Row extends orcun.balcilar.selenium.support.pagefactory.SpringWebCo
   @Autowired
   @FindBy(css = ".input-button__content")
   private Content content;
-
-  @PostConstruct
-  public void init() {
-    System.out.println("iyi miyiz");
-  }
 
   public void enterPort(String port) {
     content.click();

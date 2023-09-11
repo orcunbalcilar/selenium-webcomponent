@@ -25,7 +25,6 @@ public class HomePage extends Page {
   }
 
   public void selectFromPort(String port) {
-    System.out.println("heyoo");
     rows.get(0).enterPort(port);
   }
 

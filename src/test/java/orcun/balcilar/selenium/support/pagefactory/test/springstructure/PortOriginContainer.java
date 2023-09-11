@@ -8,7 +8,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 @ScenarioScope
-public class PortOriginContainer extends orcun.balcilar.selenium.support.pagefactory.SpringWebComponent {
+public class PortOriginContainer
+    extends orcun.balcilar.selenium.support.pagefactory.SpringWebComponent {
   private WebElement selectedPort;
 
   @Autowired

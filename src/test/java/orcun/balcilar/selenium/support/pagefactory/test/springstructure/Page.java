@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationContext;
 public abstract class Page implements SpringBeanElementInitializer {
   @Autowired protected Browser browser;
   @Autowired protected ApplicationContext applicationContext;
+
   @PostConstruct
   public void init() {
     initElements(browser.getDriver(), new WebComponentLocatorFactory(browser.getDriver(), 30));
