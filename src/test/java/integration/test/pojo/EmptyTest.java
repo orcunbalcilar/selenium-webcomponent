@@ -1,9 +1,8 @@
 package integration.test.pojo;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-import java.time.Duration;
-
 import io.github.orcunbalcilar.selenium.support.pagefactory.WebComponentLocatorFactory;
+import java.time.Duration;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;

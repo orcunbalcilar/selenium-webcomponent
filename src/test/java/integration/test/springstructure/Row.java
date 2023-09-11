@@ -1,5 +1,6 @@
 package integration.test.springstructure;
 
+import io.github.orcunbalcilar.selenium.support.pagefactory.SpringWebComponent;
 import org.openqa.selenium.support.FindBy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Scope(value = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
-public class Row extends orcun.balcilar.selenium.support.pagefactory.SpringWebComponent {
+public class Row extends SpringWebComponent {
 
   @Autowired
   @FindBy(css = ".input-button__content")

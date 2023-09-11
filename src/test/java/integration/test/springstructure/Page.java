@@ -1,9 +1,8 @@
 package integration.test.springstructure;
 
-import javax.annotation.PostConstruct;
-
 import io.github.orcunbalcilar.selenium.support.pagefactory.SpringBeanElementInitializer;
 import io.github.orcunbalcilar.selenium.support.pagefactory.WebComponentLocatorFactory;
+import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 

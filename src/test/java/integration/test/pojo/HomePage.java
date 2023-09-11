@@ -1,10 +1,8 @@
 package integration.test.pojo;
 
-import java.util.List;
-
 import io.github.orcunbalcilar.selenium.support.pagefactory.WebComponentFieldDecorator;
 import io.github.orcunbalcilar.selenium.support.pagefactory.WebComponentLocatorFactory;
-import orcun.balcilar.selenium.support.pagefactory.test.springstructure.*;
+import java.util.List;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
