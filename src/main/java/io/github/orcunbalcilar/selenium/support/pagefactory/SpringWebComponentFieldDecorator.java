@@ -40,9 +40,9 @@ public class SpringWebComponentFieldDecorator extends WebComponentFieldDecorator
         && hasNoSpringDIAnnotation(field)) {
       return proxyForWebComponent(loader, locator, field);
     } else if (List.class.isAssignableFrom(field.getType())
-        && !(getListType(field).getClass().isInstance(SpringWebComponent.class))
+        && !(SpringWebComponent.class.isAssignableFrom((Class<?>) getListType(field)))
         && hasNoSpringDIAnnotation(field)) {
-      return getListType(field) instanceof WebElement
+      return WebElement.class.isAssignableFrom((Class<?>) getListType(field))
           ? proxyForListLocatorByScope(loader, locator, field)
           : proxyForListWebComponent(loader, locator, field);
     } else {
@@ -52,7 +52,7 @@ public class SpringWebComponentFieldDecorator extends WebComponentFieldDecorator
 
   public boolean isDecoratableListSpringWebComponent(Field field) {
     return List.class.isAssignableFrom(field.getType())
-        && getListType(field).getClass().isInstance(SpringWebComponent.class)
+        && SpringWebComponent.class.isAssignableFrom((Class<?>) getListType(field))
         && hasNoSpringDIAnnotation(field);
   }
 

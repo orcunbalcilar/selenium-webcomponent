@@ -48,7 +48,7 @@ public class WebComponentFieldDecorator extends DefaultFieldDecorator {
     } else if (WebComponent.class.isAssignableFrom(field.getType())) {
       return proxyForWebComponent(loader, locator, field);
     } else if (List.class.isAssignableFrom(field.getType())) {
-      return getListType(field) instanceof WebElement
+      return WebElement.class.isAssignableFrom((Class<?>) getListType(field))
           ? proxyForListLocatorByScope(loader, locator, field)
           : proxyForListWebComponent(loader, locator, field);
     } else {
@@ -134,9 +134,8 @@ public class WebComponentFieldDecorator extends DefaultFieldDecorator {
 
     Type listType = getListType(field);
 
-    // isInstance used to support for inner classes
-    if (!listType.getClass().isInstance(WebElement.class)
-        || !listType.getClass().isInstance(WebComponent.class)) {
+    if (!WebElement.class.isAssignableFrom((Class<?>) listType)
+        || !WebComponent.class.isAssignableFrom((Class<?>) listType)) {
       return false;
     }
 

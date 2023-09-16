@@ -14,6 +14,9 @@ public class HomePage extends Page {
 
   private WebElement abc;
 
+  @FindBy(css = ".fake-list")
+  private List<WebElement> fakeList;
+
   @FindBy(css = "fsw-input-button")
   private List<Row> rows;
 
