@@ -135,7 +135,7 @@ public class WebComponentFieldDecorator extends DefaultFieldDecorator {
     Type listType = getListType(field);
 
     if (!WebElement.class.isAssignableFrom((Class<?>) listType)
-        || !WebComponent.class.isAssignableFrom((Class<?>) listType)) {
+        && !WebComponent.class.isAssignableFrom((Class<?>) listType)) {
       return false;
     }
 
