@@ -12,7 +12,7 @@ public class Content extends WebComponent {
   private WebElement input;
 
   @FindBy(css = ".input-button__label.body-m-lg.body-m-sm")
-  private List<WebElement> fakeList;
+  private List<WebElement> inputLabels;
 
   @PageScoped
   @FindBy(css = ".home")
