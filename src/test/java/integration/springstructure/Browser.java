@@ -1,4 +1,4 @@
-package integration.test.springstructure;
+package integration.springstructure;
 
 import io.cucumber.spring.ScenarioScope;
 import io.github.bonigarcia.wdm.WebDriverManager;

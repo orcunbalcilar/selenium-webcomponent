@@ -1,4 +1,4 @@
-package integration.test.springstructure;
+package integration.springstructure;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,4 +1,4 @@
-package integration.test.pojo;
+package integration.pojo;
 
 import io.github.orcunbalcilar.selenium.support.pagefactory.WebComponent;
 import org.openqa.selenium.support.FindBy;

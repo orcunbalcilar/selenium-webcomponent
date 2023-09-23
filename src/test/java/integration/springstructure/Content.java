@@ -1,18 +1,22 @@
-package integration.test.pojo;
+package integration.springstructure;
 
 import io.github.orcunbalcilar.selenium.support.pagefactory.PageScoped;
-import io.github.orcunbalcilar.selenium.support.pagefactory.WebComponent;
+import io.github.orcunbalcilar.selenium.support.pagefactory.SpringWebComponent;
 import java.util.List;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-public class Content extends WebComponent {
+@Scope(value = "prototype")
+@Component
+public class Content extends SpringWebComponent {
 
   @FindBy(css = ".input-button__input")
   private WebElement input;
 
   @FindBy(css = ".input-button__label.body-m-lg.body-m-sm")
-  private List<WebElement> inputLabels;
+  private List<WebElement> fakeList;
 
   @PageScoped
   @FindBy(css = ".home")

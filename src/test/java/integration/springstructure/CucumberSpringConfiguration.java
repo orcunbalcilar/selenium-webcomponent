@@ -1,4 +1,4 @@
-package integration.test.springstructure;
+package integration.springstructure;
 
 import io.cucumber.spring.CucumberContextConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;

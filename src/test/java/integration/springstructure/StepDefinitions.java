@@ -1,4 +1,4 @@
-package integration.test.springstructure;
+package integration.springstructure;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;

@@ -1,4 +1,4 @@
-package integration.test.springstructure;
+package integration.springstructure;
 
 import io.github.orcunbalcilar.selenium.support.pagefactory.SpringWebComponent;
 import java.util.List;

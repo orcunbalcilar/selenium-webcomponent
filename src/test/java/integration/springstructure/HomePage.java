@@ -1,4 +1,4 @@
-package integration.test.springstructure;
+package integration.springstructure;
 
 import java.util.List;
 import org.openqa.selenium.WebElement;
