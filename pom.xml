@@ -5,7 +5,7 @@
 
     <groupId>io.github.orcunbalcilar</groupId>
     <artifactId>selenium-webcomponent</artifactId>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Web Component Support For Page Factory</description>
     <url>https://github.com/orcunbalcilar/selenium-webcomponent</url>

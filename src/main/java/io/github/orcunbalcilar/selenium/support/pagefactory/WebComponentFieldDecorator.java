@@ -13,7 +13,6 @@ import org.openqa.selenium.support.FindAll;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.FindBys;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.pagefactory.DefaultElementLocatorFactory;
 import org.openqa.selenium.support.pagefactory.DefaultFieldDecorator;
 import org.openqa.selenium.support.pagefactory.ElementLocator;
 
@@ -33,27 +32,31 @@ public class WebComponentFieldDecorator extends DefaultFieldDecorator {
   @Override
   public Object decorate(ClassLoader loader, Field field) {
     if (!(WebElement.class.isAssignableFrom(field.getType())
-        || isDecoratableWebComponent(field)
-        || isDecoratableList(field))) {
+        || (hasFindByAnnotation(field)
+            && (isDecoratableWebComponent(field) || isDecoratableList(field))))) {
       return null;
     }
 
-    ElementLocator locator = factory.createLocator(field);
+    ElementLocator locator = createLocatorByScope(field);
     if (locator == null) {
       return null;
     }
 
     if (WebElement.class.isAssignableFrom(field.getType())) {
-      return proxyForLocatorByScope(loader, locator, field);
+      return proxyForLocator(loader, locator);
     } else if (WebComponent.class.isAssignableFrom(field.getType())) {
       return proxyForWebComponent(loader, locator, field);
     } else if (List.class.isAssignableFrom(field.getType())) {
       return WebElement.class.isAssignableFrom((Class<?>) getListType(field))
-          ? proxyForListLocatorByScope(loader, locator, field)
+          ? proxyForListLocator(loader, locator)
           : proxyForListWebComponent(loader, locator, field);
     } else {
       return null;
     }
+  }
+
+  ElementLocator createLocatorByScope(Field field) {
+    return ((WebComponentLocatorFactory) factory).createLocator(field, driver);
   }
 
   protected Type getListType(Field field) {
@@ -64,7 +67,7 @@ public class WebComponentFieldDecorator extends DefaultFieldDecorator {
   protected WebComponent proxyForWebComponent(
       ClassLoader loader, ElementLocator locator, Field field) {
     WebComponent webComponent = createInstance((Class<? extends WebComponent>) field.getType());
-    WebElement proxyWebElement = proxyForLocatorByScope(loader, locator, field);
+    WebElement proxyWebElement = proxyForLocator(loader, locator);
     webComponent.setSearchContext(proxyWebElement);
     initWebComponentElements(proxyWebElement, webComponent);
     return webComponent;
@@ -72,7 +75,7 @@ public class WebComponentFieldDecorator extends DefaultFieldDecorator {
 
   protected List<? extends WebComponent> proxyForListWebComponent(
       ClassLoader loader, ElementLocator locator, Field field) {
-    List<WebElement> elements = proxyForListLocatorByScope(loader, locator, field);
+    List<WebElement> elements = proxyForListLocator(loader, locator);
     Class<? extends WebComponent> runtimeClass = getTypeArgumentWebComponentClass(field);
     List<? extends WebComponent> webComponents =
         elements.stream().map(e -> createInstance(runtimeClass)).collect(Collectors.toList());
@@ -116,7 +119,7 @@ public class WebComponentFieldDecorator extends DefaultFieldDecorator {
   }
 
   protected boolean isDecoratableWebComponent(Field field) {
-    return WebComponent.class.isAssignableFrom(field.getType()) && hasFindByAnnotation(field);
+    return WebComponent.class.isAssignableFrom(field.getType());
   }
 
   @Override
@@ -134,12 +137,8 @@ public class WebComponentFieldDecorator extends DefaultFieldDecorator {
 
     Type listType = getListType(field);
 
-    if (!WebElement.class.isAssignableFrom((Class<?>) listType)
-        && !WebComponent.class.isAssignableFrom((Class<?>) listType)) {
-      return false;
-    }
-
-    return hasFindByAnnotation(field);
+    return WebElement.class.isAssignableFrom((Class<?>) listType)
+        || WebComponent.class.isAssignableFrom((Class<?>) listType);
   }
 
   protected final boolean hasFindByAnnotation(Field field) {
@@ -148,21 +147,13 @@ public class WebComponentFieldDecorator extends DefaultFieldDecorator {
         || field.getAnnotation(FindAll.class) != null;
   }
 
-  protected final WebElement proxyForLocatorByScope(
-      ClassLoader loader, ElementLocator locator, Field field) {
-    return hasPageScopeAnnotation(field)
-        ? proxyForLocator(loader, new DefaultElementLocatorFactory(driver).createLocator(field))
-        : proxyForLocator(loader, locator);
+  @Override
+  protected WebElement proxyForLocator(ClassLoader loader, ElementLocator locator) {
+    return super.proxyForLocator(loader, locator);
   }
 
-  protected final List<WebElement> proxyForListLocatorByScope(
-      ClassLoader loader, ElementLocator locator, Field field) {
-    return hasPageScopeAnnotation(field)
-        ? proxyForListLocator(loader, new DefaultElementLocatorFactory(driver).createLocator(field))
-        : proxyForListLocator(loader, locator);
-  }
-
-  private boolean hasPageScopeAnnotation(Field field) {
-    return field.isAnnotationPresent(PageScoped.class);
+  @Override
+  protected List<WebElement> proxyForListLocator(ClassLoader loader, ElementLocator locator) {
+    return super.proxyForListLocator(loader, locator);
   }
 }

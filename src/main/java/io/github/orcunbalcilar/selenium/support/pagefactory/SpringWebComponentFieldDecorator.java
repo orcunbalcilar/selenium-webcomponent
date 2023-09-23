@@ -13,29 +13,21 @@ public class SpringWebComponentFieldDecorator extends WebComponentFieldDecorator
     super(driver, factory);
   }
 
-  public WebDriver getDriver() {
-    return driver;
-  }
-
-  public WebComponentLocatorFactory getFactory() {
-    return (WebComponentLocatorFactory) this.factory;
-  }
-
   @Override
   public Object decorate(ClassLoader loader, Field field) {
     if (!(WebElement.class.isAssignableFrom(field.getType())
-        || isDecoratableWebComponent(field)
-        || isDecoratableList(field))) {
+        || (hasFindByAnnotation(field)
+            && (isDecoratableWebComponent(field) || isDecoratableList(field))))) {
       return null;
     }
 
-    ElementLocator locator = factory.createLocator(field);
+    ElementLocator locator = createLocatorByScope(field);
     if (locator == null) {
       return null;
     }
 
     if (WebElement.class.isAssignableFrom(field.getType())) {
-      return proxyForLocatorByScope(loader, locator, field);
+      return proxyForLocator(loader, locator);
     } else if (WebComponent.class.isAssignableFrom(field.getType())
         && hasNoSpringDIAnnotation(field)) {
       return proxyForWebComponent(loader, locator, field);
@@ -43,7 +35,7 @@ public class SpringWebComponentFieldDecorator extends WebComponentFieldDecorator
         && !(SpringWebComponent.class.isAssignableFrom((Class<?>) getListType(field)))
         && hasNoSpringDIAnnotation(field)) {
       return WebElement.class.isAssignableFrom((Class<?>) getListType(field))
-          ? proxyForListLocatorByScope(loader, locator, field)
+          ? proxyForListLocator(loader, locator)
           : proxyForListWebComponent(loader, locator, field);
     } else {
       return null;
@@ -51,15 +43,16 @@ public class SpringWebComponentFieldDecorator extends WebComponentFieldDecorator
   }
 
   public boolean isDecoratableListSpringWebComponent(Field field) {
-    return List.class.isAssignableFrom(field.getType())
-        && SpringWebComponent.class.isAssignableFrom((Class<?>) getListType(field))
-        && hasNoSpringDIAnnotation(field);
+    return hasFindByAnnotation(field)
+        && List.class.isAssignableFrom(field.getType())
+        && hasNoSpringDIAnnotation(field)
+        && SpringWebComponent.class.isAssignableFrom((Class<?>) getListType(field));
   }
 
   public boolean isDecoratableSpringWebComponent(Field field) {
-    return SpringWebComponent.class.isAssignableFrom(field.getType())
-        && !hasNoSpringDIAnnotation(field)
-        && hasFindByAnnotation(field);
+    return hasFindByAnnotation(field)
+        && SpringWebComponent.class.isAssignableFrom(field.getType())
+        && !hasNoSpringDIAnnotation(field);
   }
 
   private boolean hasNoSpringDIAnnotation(Field field) {
@@ -71,5 +64,13 @@ public class SpringWebComponentFieldDecorator extends WebComponentFieldDecorator
                         .annotationType()
                         .getName()
                         .equals("org.springframework.beans.factory.annotation.Autowired"));
+  }
+
+  protected WebComponentLocatorFactory getFactory() {
+    return (WebComponentLocatorFactory) factory;
+  }
+
+  protected WebDriver getDriver() {
+    return driver;
   }
 }

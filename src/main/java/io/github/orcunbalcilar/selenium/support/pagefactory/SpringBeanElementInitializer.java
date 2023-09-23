@@ -10,6 +10,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 import org.springframework.aop.support.AopUtils;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -25,70 +26,65 @@ public interface SpringBeanElementInitializer {
     Field[] fields = AopUtils.getTargetClass(this).getDeclaredFields();
     Arrays.stream(fields)
         .filter(decorator::isDecoratableSpringWebComponent)
-        .forEach(
-            field -> {
-              WebElement webElement =
-                  decorator.proxyForLocatorByScope(
-                      this.getClass().getClassLoader(),
-                      decorator.getFactory().createLocator(field),
-                      field);
-              try {
-                field.setAccessible(true);
-                SpringWebComponent springWebComponent = (SpringWebComponent) field.get(this);
-                springWebComponent.setSearchContext(webElement);
-                WebComponentLocatorFactory locatorFactory =
-                    new WebComponentLocatorFactory(
-                        webElement,
-                        decorator.getFactory().getTimeOutInSeconds(),
-                        decorator.getFactory().getExceptions());
-                springWebComponent.initElements(decorator.getDriver(), locatorFactory);
-              } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-              }
-            });
+        .forEach(field -> initSpringWebComponent(decorator, field));
     Arrays.stream(fields)
         .filter(decorator::isDecoratableListSpringWebComponent)
-        .forEach(
-            field -> {
-              List<WebElement> webElements =
-                  decorator.proxyForListLocatorByScope(
-                      this.getClass().getClassLoader(),
-                      decorator.getFactory().createLocator(field),
-                      field);
-              Type t = ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
-              try {
-                List<SpringWebComponent> c =
-                    webElements.stream()
-                        .map(
-                            w -> {
-                              SpringWebComponent s =
-                                  (SpringWebComponent)
-                                      getApplicationContext()
-                                          .getAutowireCapableBeanFactory()
-                                          .createBean((Class<?>) t);
-                              getApplicationContext()
-                                  .getAutowireCapableBeanFactory()
-                                  .autowireBean(s);
-                              try {
-                                s.setSearchContext(w);
-                                WebComponentLocatorFactory locatorFactory =
-                                    new WebComponentLocatorFactory(
-                                        w,
-                                        decorator.getFactory().getTimeOutInSeconds(),
-                                        decorator.getFactory().getExceptions());
-                                s.initElements(decorator.getDriver(), locatorFactory);
-                              } catch (Exception e) {
-                                throw new RuntimeException(e);
-                              }
-                              return s;
-                            })
-                        .collect(Collectors.toList());
-                field.setAccessible(true);
-                field.set(this, c);
-              } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-              }
-            });
+        .forEach(field -> initListSpringWebComponent(decorator, field));
+  }
+
+  private void initSpringWebComponent(SpringWebComponentFieldDecorator decorator, Field field) {
+    field.setAccessible(true);
+    WebElement webElement =
+        decorator.proxyForLocator(
+            this.getClass().getClassLoader(), decorator.createLocatorByScope(field));
+    try {
+      SpringWebComponent springWebComponent = (SpringWebComponent) field.get(this);
+      springWebComponent.setSearchContext(webElement);
+      WebComponentLocatorFactory factory = decorator.getFactory();
+      WebComponentLocatorFactory locatorFactory =
+          new WebComponentLocatorFactory(
+              webElement, factory.getTimeOutInSeconds(), factory.getExceptions());
+      springWebComponent.initElements(decorator.getDriver(), locatorFactory);
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private void initListSpringWebComponent(SpringWebComponentFieldDecorator decorator, Field field) {
+    field.setAccessible(true);
+    List<WebElement> webElements =
+        decorator.proxyForListLocator(
+            this.getClass().getClassLoader(), decorator.createLocatorByScope(field));
+    List<SpringWebComponent> list = createList(webElements, field);
+    for (int i = 0; i < webElements.size(); i++) {
+      WebElement webElement = webElements.get(i);
+      SpringWebComponent springWebComponent = list.get(i);
+      springWebComponent.setSearchContext(webElement);
+      WebComponentLocatorFactory factory = decorator.getFactory();
+      WebComponentLocatorFactory locatorFactory =
+          new WebComponentLocatorFactory(
+              webElement, factory.getTimeOutInSeconds(), factory.getExceptions());
+      springWebComponent.initElements(decorator.getDriver(), locatorFactory);
+    }
+    try {
+      field.set(this, list);
+    } catch (IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private List<SpringWebComponent> createList(List<WebElement> webElements, Field field) {
+    Type t = ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
+    AutowireCapableBeanFactory beanFactory =
+        getApplicationContext().getAutowireCapableBeanFactory();
+    return webElements.stream()
+        .map(
+            webElement -> {
+              SpringWebComponent s = (SpringWebComponent) beanFactory.createBean((Class<?>) t);
+              beanFactory.autowireBean(s);
+              return s;
+            })
+        .collect(Collectors.toList());
   }
 
   ApplicationContext getApplicationContext();

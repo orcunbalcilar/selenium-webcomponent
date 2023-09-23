@@ -3,10 +3,7 @@ package io.github.orcunbalcilar.selenium.support.pagefactory;
 import java.lang.reflect.Field;
 import java.util.List;
 import lombok.Getter;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.SearchContext;
-import org.openqa.selenium.StaleElementReferenceException;
-import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.pagefactory.ElementLocator;
 import org.openqa.selenium.support.pagefactory.ElementLocatorFactory;
 
@@ -35,5 +32,15 @@ public class WebComponentLocatorFactory implements ElementLocatorFactory {
   @Override
   public ElementLocator createLocator(Field field) {
     return new WebComponentLocator(searchContext, field, timeOutInSeconds, exceptions);
+  }
+
+  public WebComponentLocator createLocator(Field field, WebDriver driver) {
+    return hasPageScopeAnnotation(field)
+        ? new WebComponentLocator(driver, field, timeOutInSeconds, exceptions)
+        : (WebComponentLocator) createLocator(field);
+  }
+
+  private boolean hasPageScopeAnnotation(Field field) {
+    return field.isAnnotationPresent(PageScoped.class);
   }
 }
