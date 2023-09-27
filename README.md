@@ -20,5 +20,5 @@ You can find it in Maven Central repository. Add the dependency below to your po
 
 # Release Notes
 
-Version 1.2.0 has been released as corrupted due to a temporary deployment issue. Please use 1.3.0 instead and ignore
+Version 1.2.0 had been released as corrupted due to a temporary deployment issue. Please use 1.3.0 instead and ignore
 version 1.2.0. Sorry for the inconvenience.
